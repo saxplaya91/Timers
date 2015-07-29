@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Timers</title>
+	<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.0.4/angular.js"></script>
+</head>
+<body ng-app="TimerApp" ng-controller="TimerController" style="background-color:#F5F5F5">
+
+<p>{{test}}</p>
+<div ng-repeat="timer in timers" class="timerDiv">
+	<p class="text"><b>{{timer.name}}</b>
+	<button class="closeButton" ng-click="confirm = true"><b>X</b></button></p>
+	<p class="text">{{timer.time | secondsToDateTime | date:'HH:mm:ss'}}</p>
+	<div class="confirmbox" ng-show="confirm">
+		<button ng-click="removeTimer(timer)" style="margin-left: 5px">Confirm</button>
+		<button ng-click="confirm = false">Cancel</button>
+	</div>
+</div>
+
+<div>
+	<input class="input" ng-model="newtimer.name"></input>
+	<input class="input input2" type="time" ng-model="newtimer.time"></input>
+	<button class="newButton" ng-click="addTimer(newtimer)">Add</button>
+</div>
+
+<div>
+	<button class="resetAlarmButton" ng-click="resetAlarm()">Reset Alarm</button>
+</div>
+
+<script>
+
+var app = angular.module('TimerApp', []);
+
+app.controller("TimerController", ['$scope', function($scope){
+	$scope.timers = [];
+	$scope.confirm = false;
+	
+	var date = new Date();
+	var lastUpdate;
+	
+	setInterval(function(){reduceTime()}, 1000);
+	
+	function reduceTime(){
+		for(var i = 0; i < $scope.timers.length; i++){
+			$scope.$apply(function(){
+				if($scope.timers[i].time == 1){
+					$scope.launchAlarm();
+				}
+				if($scope.timers[i].time != 0){
+					$scope.timers[i].time--;
+				}					
+			});
+		}
+	}
+	
+	$scope.addTimer = function(timer){
+		var hours = parseInt(timer.time.split(':')[0]);
+		var minutes = parseInt(timer.time.split(':')[1]);
+		
+		var newTimer = {name: timer.name, time: hours * 3600 + minutes * 60};
+		$scope.timers.push(newTimer);
+	}
+	
+	$scope.removeTimer = function(timer){
+		$scope.timers.splice($scope.timers.indexOf(timer), 1);		
+	};
+	
+	$scope.launchAlarm = function(){
+		var body=document.getElementsByTagName('body')[0];
+		body.style.backgroundColor="red";
+		
+		$scope.audio = new Audio('alarm.mp3');
+		$scope.audio.play();
+	};
+	
+	$scope.resetAlarm = function(){
+		var body=document.getElementsByTagName('body')[0];
+		body.style.backgroundColor="#F5F5F5";
+		if($scope.audio != null){
+			$scope.audio.pause();
+			$scope.audio.currentTime = 0;
+		}
+	};
+}]);
+
+app.filter('secondsToDateTime', function() {
+    return function(seconds) {
+        var d = new Date(0,0,0,0,0,0,0);
+        d.setSeconds(seconds);
+        return d;
+    };
+});
+
+</script>
+<style>
+
+.timerDiv{
+	background-color:#DDDDDD;
+	border-radius:5px;
+	padding: 5px;
+	margin: 10px;
+	width: 200px;
+}
+
+.closeButton{
+	display: inline-block;
+	float: right;
+	background-color: #BB0000;
+	border-radius: 3px;
+	border: 1px solid black;
+}
+
+.closeButton:hover{
+	background-color: #880000;
+}
+
+.newButton{
+	display: inline-block;
+	background-color: #00BB00;
+	border-radius: 3px;
+	border: 1px solid black;
+	font-size: 16px;
+}
+
+.resetAlarmButton{
+	margin-left: 10px;
+}
+
+.text{
+	font-family: Arial;
+	margin: 5px;
+}
+
+.input{
+	margin: 10px;
+	height: 17px;
+}
+
+.input2{
+	margin-left: 0px;
+}
+
+.bottomtext{
+	margin-left: 10px;
+	margin-top: 100px;
+	color: #888888;
+}
+
+</style>
+</body>
+</html>
