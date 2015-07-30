@@ -1,5 +1,5 @@
 # Timers
-[LINK TO THE APP!](https://github.com/saxplaya91/Timers/blob/master/timers.html)
+[LINK TO THE APP!](http://htmlpreview.github.io/?https://github.com/saxplaya91/Timers/blob/master/timers.html)
 
 Simple web page to create multiple countdown timers.
 
